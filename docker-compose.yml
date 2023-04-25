@@ -1,0 +1,35 @@
+version: "3.9"
+
+# defines two services, "mongo" and "mongo-express",
+# as part of a multi-container application.
+services:
+  mongo:
+    # The container will be named "mongo"
+    container_name: mongo
+    # uses the latest version of the Mongo image from Docker Hub
+    image: mongo:latest
+    # can be used by the Mongo container to create a database
+    # with the specified name
+    environment:
+      - MONGO_DATABASE="amazon"
+    # container will expose port 27017 to the host
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    container_name: mongo-express
+    # uses the Mongo Express image from Docker Hub
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+    # mongo-express service is configured to depend on the mongo service
+    # This means that Docker Compose will start the mongo service before
+    # starting the mongo-express service. This is important because the
+    # mongo-express container requires a running instance of the mongo
+    # container to connect to the Mongo database
+    depends_on:
+      - mongo
+    # It exposes port 8081 to the host
+    ports:
+      - 8081:8081
