@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,6 +15,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { ProductDocument } from './product.schema';
@@ -22,6 +24,7 @@ import { CreateProductDto } from './dtos/create-product.dto';
 import { GetAllProductsDto } from './dtos/get-all-products.dto';
 import { GetProductById } from './dtos/get-product-id.dto';
 import { UpdateProductDto } from './dtos/update-product.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
 
 // Represent: localhost:3000/product
 @ApiTags('product')
@@ -48,7 +51,9 @@ export class ProductController {
   }
 
   // Get all products
+  @UseGuards(JwtGuard)
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Retrieve all products' })
   @ApiResponse({
     status: HttpStatus.OK,

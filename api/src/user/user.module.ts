@@ -3,8 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './user.schema';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { NewUserDTO } from './dtos/new-user.dto';
-import { ExistingUserDTO } from './dtos/existing-user.dto';
 
 @Module({
   imports: [

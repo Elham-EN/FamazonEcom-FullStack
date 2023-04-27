@@ -14,6 +14,7 @@ async function bootstrap() {
       'Provide all nesscessary endpoints to auth, register, get list of products, add new product and more',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('FamazoneEcom')
     .build();
   const document = SwaggerModule.createDocument(app, config);
