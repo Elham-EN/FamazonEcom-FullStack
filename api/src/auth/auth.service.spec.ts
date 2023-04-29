@@ -9,7 +9,7 @@ import { UserDocument } from '../user/user.schema';
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
-  let jwtService: JwtService;
+  // let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,7 +34,7 @@ describe('AuthService', () => {
 
     authService = module.get<AuthService>(AuthService);
     userService = module.get<UserService>(UserService);
-    jwtService = module.get<JwtService>(JwtService);
+    // jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
