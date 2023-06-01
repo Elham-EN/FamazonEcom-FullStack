@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -7,6 +8,7 @@ import {
   Typography,
   Button,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import useInput from "../../../hooks/input/user-input";
@@ -14,6 +16,10 @@ import {
   validateEmail,
   validatePasswordLength,
 } from "../../../shared/utils/validation/validations";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux/hooks";
+import { login, reset } from "../authSlice";
+import { LoginUser } from "../models/LoginUser.interface";
 
 export default function SignInForm() {
   const {
@@ -37,14 +43,40 @@ export default function SignInForm() {
     passwordClearHandler();
   };
 
+  const dispatch = useAppDispatch();
+  const { isLoading, isSuccess, isAuthenticated } = useAppSelector(
+    (state) => state.auth
+  );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(reset());
+      clearForm();
+    }
+  }, [isSuccess, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    navigate("/");
+  }, [isAuthenticated]);
+
   const onSumbitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (emailHasError || passwordHasError) return;
     if (email?.length === 0 || password?.length === 0) return;
 
-    clearForm();
+    if (email && password) {
+      const loginUser: LoginUser = { email, password };
+      dispatch(login(loginUser));
+    }
   };
+
+  if (isLoading)
+    return <CircularProgress sx={{ marginTop: "64px" }} color="primary" />;
+
   return (
     <Box
       sx={{

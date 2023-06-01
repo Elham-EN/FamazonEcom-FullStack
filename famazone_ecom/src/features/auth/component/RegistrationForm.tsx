@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { FormEvent } from "react";
+import { FormEvent, useEffect } from "react";
 import {
   Box,
   Grid,
@@ -7,8 +7,9 @@ import {
   Typography,
   Button,
   Divider,
+  CircularProgress,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useInput from "../../../hooks/input/user-input";
 import {
   validateNameLength,
@@ -16,6 +17,8 @@ import {
   validateEmail,
 } from "../../../shared/utils/validation/validations";
 import { NewUser } from "../models/NewUser";
+import { useAppDispatch, useAppSelector } from "../../../hooks/redux/hooks";
+import { register, reset } from "../authSlice";
 
 export default function RegistrationForm() {
   const {
@@ -57,9 +60,25 @@ export default function RegistrationForm() {
     confirmPasswordClearHandler();
   };
 
+  const dispatch = useAppDispatch();
+
+  const { isLoading, isSuccess } = useAppSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(reset);
+      clearForm();
+      navigate("/signin");
+    }
+  }, [isSuccess, dispatch]);
+
   const onSumbitHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (password !== confirmPassword) return;
+
     if (
       nameHasError ||
       emailHasError ||
@@ -67,6 +86,7 @@ export default function RegistrationForm() {
       confirmPasswordHasError
     )
       return;
+
     if (
       name?.length === 0 ||
       email?.length === 0 ||
@@ -74,14 +94,16 @@ export default function RegistrationForm() {
       confirmPassword?.length === 0
     )
       return;
+
     if (name && email && password) {
       const newUser: NewUser = { name, email, password };
-      console.log("====================================");
-      console.log(newUser);
-      console.log("====================================");
-      clearForm();
+      dispatch(register(newUser));
     }
   };
+
+  if (isLoading)
+    return <CircularProgress sx={{ marginTop: "64px" }} color="primary" />;
+
   return (
     <Box
       sx={{

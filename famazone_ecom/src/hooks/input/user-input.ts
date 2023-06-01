@@ -19,7 +19,7 @@ function inputReducer(
   state: InputState,
   action: Action<InputActionType>
 ): InputState {
-  const { type, value } = action;
+  const { type, value = "" } = action;
   switch (type) {
     case INPUT_ACTION_CHANGE:
       // state value is updated based on input change event and

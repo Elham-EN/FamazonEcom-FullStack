@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { NewUserDTO } from '../user/dtos/new-user.dto';
@@ -26,7 +26,8 @@ export class AuthService {
 
     // Check if there is an existing user in the database
     const existingUser = await this.userService.findByEmail(email);
-    if (existingUser) return 'Email taken!';
+    if (existingUser)
+      throw new HttpException('Account already taken', HttpStatus.CONFLICT);
 
     const hashedPassword = await this.hashPassword(password);
 
@@ -73,11 +74,21 @@ export class AuthService {
   ): Promise<{ token: string } | null> {
     const { email, password } = existingUser;
     const user = await this.validateUser(email, password);
-    if (!user) return null;
+    if (!user)
+      throw new HttpException('Credential invalid', HttpStatus.UNAUTHORIZED);
     // generate a JWT with the user information as its payload and return
     // the token to the client. The client can then use this token for
     // authentication and authorization in subsequent requests to the server
     const jwt = await this.jwtService.signAsync({ user });
     return { token: jwt };
+  }
+
+  async verifyJwt(jwt: string): Promise<{ exp: number }> {
+    try {
+      const { exp } = await this.jwtService.verifyAsync(jwt);
+      return { exp };
+    } catch (error) {
+      throw new HttpException('Invalid JWT', HttpStatus.UNAUTHORIZED);
+    }
   }
 }
