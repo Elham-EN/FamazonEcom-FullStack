@@ -1,11 +1,11 @@
 import React from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/redux/hooks";
-import { logout } from "../features/auth/authSlice";
+import { logout, selectedUser } from "../features/auth/authSlice";
 import { Button } from "@mui/material";
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector(selectedUser);
 
   const logoutHandler = () => {
     dispatch(logout());
